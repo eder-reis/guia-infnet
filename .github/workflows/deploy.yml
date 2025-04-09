@@ -1,0 +1,44 @@
+name: Build and Push Docker Image with Semantic Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Setup Node (para ler package.json)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Extração da versão semver do package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version_tag=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+        # run: docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+
+      - name: Build da imagem Docker
+        run: |
+          docker build -t ederjoliveira/infnet-guia:${{ steps.version.outputs.version_tag }} .
+          docker tag ederjoliveira/infnet-guia:${{ steps.version.outputs.version_tag }} ederjoliveira/infnet-guia:latest
+
+      - name: Push da imagem com tag semântica e latest
+        run: |
+          docker push ederjoliveira/infnet-guia:${{ steps.version.outputs.version_tag }}
+          docker push ederjoliveira/infnet-guia:latest

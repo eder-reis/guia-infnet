@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guia-infnet
+  namespace: guia-infnet
+  labels:
+    apps: guia
+    version: "1.0"
+    team: "guia-infnet"
+    enviroment: "dev"
+    deployment: "guia-infnet"
+    service: "guia-infnet"
+    port: "3000"
+    protocol: "http"
+    path: "/"
+    method: "GET"
+    headers: {}
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: guia
+  template:
+    metadata:
+      labels:
+        app: guia
+    spec:
+      containers:
+        - name: guia
+          image: ederjoliveira/guia-infnet:latest
+          ports:
+            -containerPort: 3000
+          readinessProbe:
+              httpGet:
+                path: /healthz
+                port: 80
+              initialDelaySeconds: 5
+              periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
