@@ -1,53 +1,67 @@
-# Overview
+**Curso:** Pós em Arquitetura de Software.<br>
+**Aula:** Integração Contínua, DevOps e Computação em Nuvem<br>
+**Ano Semestre:** 25E1_3<br>
 
-Essa é uma aplicação para gerenciar seus estudos no Infnet
+# Integração Contínua, DevOps e Computação em Nuvem [25E1_3]
 
+Entrega de trabalho.
 
-## Getting Started
+### Desafio:
 
-### Docker
+1. Utilize o Docker para criar uma imagem personalizada de alguma aplicação previamente feita por você.
 
-A aplicação está configura para rodar com Docker e Docker Compose. Se você não possui o docker engine instalado, siga o tutorial de instalação na [documentação oficial](https://docs.docker.com/get-started/get-docker/).
+    - Publique a sua imagem no Docker Hub.
 
-Após instalar o docker engine:
-```
-# Rode esse comando se pretende rodar a aplicação em production mode
-docker-compose up
+2. Suba sua imagem em algum cluster kubernetes, seguindo as seguintes especificações:
 
-# Rode esse comando se pretende rodar a aplicação em development mode
-# Nesse modo o desenvolvedor tem acesso a hotreload feature
-docker-compose up -f docker-compose.development.yaml
-```
+    - Utilize Deployment para subir sua aplicação com 4 réplicas.
+    - Exponha sua aplicação de modo que ela fique acessível fora do Cluster (NODEPORT).
+    - Se sua aplicação fizer uso de banco de dados, crie um POD com o mesmo e deixe-o acessível através do ClusterIP. Se sua aplicação não fizer uso de um BD suba uma imagem do Redis e crie um ClusterIP para o mesmo.
+    - Crie algum probe para sua aplicação (Readness ou Liveness.)
 
-### CICD
-Para CICD, o projeto faz uso do GitHub Actions, e para cada nova versão pasta apenas trocar o valor da mesma no package.json. A Action irá automaticamente pegar esse valor e atribuir a tag da imagem que for gerada.
-Será necessário definir dois secrets, nas configurações do seu projeto no GitHub, com os valores necessários para acessar o seu docker hub: `DOCKER_USERNAME` & `DOCKER_PASSWORD`.
+3. Crie a estrutura para monitorar sua aplicação com o Prometheus e o Grafana (ou qualquer ferramenta a sua escolha: você deve ter um servidor de métricas e alguma ferramenta para dashboards).
+    - Apenas o Grafana deverá ficar acessível para fora do Cluster.
+    - Utilize um PVC para escrever os dados do Prometheus de maneira persistente.
+    - Crie dashboards do Grafana que exponha dados sensíveis da sua aplicação (memória, cpu, etc.)
 
+4. Utilize o Jenkins (ou qualquer ferramenta) para criar um pipeline de entrega do seu projeto.
 
-### Kubernetes
-#### Minikube
-Será necessario a instalação do minikube, siga as [instruções da documentação oficial](https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fbinary+download) para seu sistema operacional.
+5. Execute um stress test do seu projeto e tire print do Dashboard sofrendo alterações.
 
-#### Kubectl
-Será necessario a instalação do kubectl, siga as [instruções da documentação oficial](https://kubernetes.io/docs/tasks/tools/#kubectl) para seu sistema operacional.
+# Imagens do Docker Desktop
+* Container:
+![Screenshot](EntregaTrabalho/Imagens/Containers.jpg)
+* Imagens 
+    * Locais:
+    ![Screenshot](EntregaTrabalho/Imagens/Docker-Imagens-Locais.jpg)
+    * Hub
+    ![Screenshot](EntregaTrabalho/Imagens/Docker-Imagens-no-Repositorio.jpg)
 
-#### Deploy Local
-Siga os comandos a seguir para iniciar o minikube e fazer o deploy da aplicação no mesmo.
+# Usando kubernetes
 
-```
-# Iniciar o minikube
-minikube start
+* Deployment com 4 réplicas:
+![Screenshot](EntregaTrabalho/Imagens/k8s-replicas.jpg)
+* Deployment da aplicação:
+![Screenshot](EntregaTrabalho/Imagens/k8s-pods.jpg)
+* Probe para a aplicação: (vide conforme arquivo Guia-deployment.yaml)
+![Screenshot](EntregaTrabalho/Imagens/yaml-Probe.jpg)
 
-# Levantar Deployment
-kubectl apply -f guia-app.yaml
+# Estrutura para Monitorar a aplicação
+* Informações do Kubernetes sobre os Pods, Deployments e Servicos.
+![Screenshot](EntregaTrabalho/Imagens/k8s-monitoramento-pods.jpg)
+![Screenshot](EntregaTrabalho/Imagens/k8s-monitoramento-deployments.jpg)
+![Screenshot](EntregaTrabalho/Imagens/k8s-monitoramento-servicos.jpg)
 
-# Redirecionar a porta do service no minikupe para localhost:3000
-kubectl port-forward svc/guia-app-service 3000:3000
-```
+* Sistemas de Monitoramento deverá ficar acessível fora do cluster.
+![Screenshot](EntregaTrabalho/Imagens/Grafana.jpg)
 
-Acesse a aplicação em http://localhost:3000
+> Atenção devido a aula do dia 8 de abril não ter sido gravada, não pude verificar como é feito a comunicação entre o Grafana e a Aplicação. Lembro ao examinador que as terças-feiras eu participo do Culto da minha igreja.
 
-##### ⚠️ **Atenção:** Se preferir ver um Dashboard, abra uma nova janela do terminal e rode o comando a seguir 
-```
-minikube dashboard
-```
+* Utilizar o Jenkins para subir a aplicação.
+![Screenshot](EntregaTrabalho/Imagens/github-actions-resultado-Geral.jpg)
+* Arquivo Yaml do git action:
+![Screenshot](EntregaTrabalho/Imagens/Git-Action-Arquivo.jpg)
+> Aqui o conforme acordado poderia fazer o Git Actions, se o examinador achar importante, pode verificar o arquivo da solução 
+
+# Arquivo do Deployment do Kubernetes:
+![Screenshot](EntregaTrabalho/Imagens/guia-deployment-yaml.jpg)
